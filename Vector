@@ -1,0 +1,106 @@
+import math
+
+class Vector3(object):
+    """Default Vector functionality"""
+
+    xPos
+    yPos
+    zPos
+
+    def __init__(self, xPos, yPos, zPos):
+        self.xPos = xPos
+        self.yPos = yPos
+        self.zPos = zPos
+
+    def neg(self):
+        return Vector3(- self.xPos, - self.yPos, - self.zPos)
+
+    def len(self):
+        return sqrt(self.xPos * self.xPos + self.yPos * self.yPos + self.zPos * self.zPos)
+
+    def eqa(self, other):
+        return (self.xPos == other.xPos && self.yPos == other.yPos && self.zPos == other.zPos)
+
+    def deq(self, other):
+        return (self.xPos / other. xPos == self.yPos / other.yPos && self.zPos / other. zPos == self.yPos / other.yPos)
+
+    def deqn(self, other):
+        return self.deq(other) || self.deq(other.neg())
+
+    def add(self, other):
+        return Vector3(self.xPos + other.xPos, self.yPos + other.yPos, self.zPos + other.zPos)
+
+    def sub(self, other):
+        return Vector3(self.xPos - other.xPos, self.yPos - other.yPos, self.zPos - other.zPos)
+
+    def scl(self, other):
+        return Vector3(self.xPos * other, self.yPo * other, self.zPos * other)
+
+    def div(self, other):
+        return Vector3(self.xPos / other, self.yPo / other, self.zPos / other)
+
+    def vmp(self, other):
+        return self.xPos * other.xPos + self.yPos * other.yPos + self.zPos * other.zPos
+
+    def ang(self, other):
+        return acos(self.vmp(other) / (self.len() * other.len()))
+
+    def dpd(self, other):
+        return Vector3(self.yPos * other.zPos + self.zPos * other.yPos, self.xPos * other.zPos - self.zPos * other.xPos, self.yPos * other.xPos + self.xPos * other.yPos)
+
+class Line(object):
+    """Line in 3D space"""
+
+    pos
+    dir
+
+    def __init__(self, pos, dir):
+        self.pos = pos
+        self.dir = dir
+
+    def eqa(self, other):
+        return (self.par(other) && self.pco(other.pos))
+
+    def pco(self, other):
+        return (self.pos.sub(other).deqn(self.dir))
+
+    def par(self, other):
+        return (self.dir.deqn(other.dir))
+
+    def lco(self, other):
+        f = self.pos.sub(other.pos)
+        return !self.par(other) && (self.pco(other.pos) || (f.dpd(self.dir).deqn(f.dpd(other.dir))))
+
+    def lcp(self, other):
+        pass # line (other) collision point with line                                                                  <---
+
+class Plane(object):
+    """Plane in 3D space"""
+
+    pos
+    dir
+
+    def __init__(self, pos, dir):
+        self.pos = pos
+        self.dir = dir
+
+    def __init__(self, a, b, c):
+        self.dir = b.sub(a).dpd(c.sub(a))
+        self.pos = a
+
+    def pco(self, other):
+        return (self.pos.sub(other).vmp(dir) == 0)
+
+    def lco(self, other):
+        return (other.dir.vmp(self.dir) != 0)
+
+    def lcp(self, other):
+        pass # line (other) collision point with plane                                                                 <---
+
+    def plc(self, other):
+        return not self.dir.deqn(other.dir)
+
+    def pcp(self, other):
+        dir = self.dir.dpd(other.dir)
+        pos = Line(self.pos, dir.dpd(self.dir)).lcp(Line(other.pos, dir.dpd(other.dir)))
+        return Line(pos, dir)
