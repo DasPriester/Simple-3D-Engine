@@ -1,0 +1,14 @@
+# vector
+# -math (add, sub, mtp, div, vmp)
+# plane
+# -construct (triangle; vector, vector)
+# ray
+# -col -> vector
+#
+# camera
+#
+# triangle
+# cube
+#
+# render
+# display
